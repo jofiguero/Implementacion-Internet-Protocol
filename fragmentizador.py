@@ -1,5 +1,31 @@
 import sys
+import socket
 
+class Vecino:
+    def __init__(self, ip, puerto, mtu):
+        self.ip = ip
+        self.puerto = puerto
+        self.mtu = mtu
+
+    def __str__(self):
+        return f"{self.ip}|{self.puerto}|{self.mtu}"
+    
+class Datagrama:
+    def __init__(self, mensaje, ip_orig, p_orig, ip_dest, p_dest, ID):
+        self.mensaje = mensaje
+        self.ip_orig = ip_orig
+        self.p_origen = p_orig
+        self.ip_dest = ip_dest
+        self.p_dest = p_dest
+        self.ID = ID
+
+    def __str__(self):
+        return f"{self.mensaje}|{self.ip_orig}|{self.p_origen}|{self.ip_dest}|{self.p_dest}|{self.ID}"
+
+    
+def parse_datagram(datagram):
+    return datagram.split("|")
+    
 def parse_address(address):
     """Parse an address of the form ip:puerto or ip:puerto:mtu."""
     parts = address.split(":")
@@ -18,24 +44,34 @@ def parse_neighbor_address(address):
     return ip, int(puerto), int(mtu)
 
 def main():
-    # Verifica que al menos se ha pasado mi_ip:mi_puerto y una ip:puerto:mtu
+    #Procesamos los argumentos
     if len(sys.argv) < 3:
         print("Uso: python fragmentizador.py mi_ip:mi_puerto ip:puerto:mtu ip:puerto:mtu ...")
         sys.exit(1)
-    
-    # Procesa mi_ip:mi_puerto
+
     mi_ip_puerto = sys.argv[1]
     mi_ip, mi_puerto = parse_address(mi_ip_puerto)
-    
-    print(f"Procesando desde IP: {mi_ip} en el puerto: {mi_puerto}")
-    
-    # Procesa las direcciones ip:puerto:mtu
+        
+    vecinos = []
     for destination in sys.argv[2:]:
         try:
             ip, puerto, mtu = parse_neighbor_address(destination)
-            print(f"Destino: {ip}:{puerto} con MTU: {mtu}")
+            vec = Vecino(ip,puerto,mtu)
+            vecinos += [vec]
         except ValueError as e:
             print(e)
+    print("CREANDO EL SCOKET")
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind(('', mi_puerto))
+
+    print("NOS PONDREMOS A ESCUCHAR")
+    
+    data = sock.recv(1024).decode()
+
+    datagrama = parse_datagram(data)
+    print(datagrama)
+
 
 if __name__ == "__main__":
     main()
+1
