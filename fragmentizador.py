@@ -24,7 +24,8 @@ class Datagrama:
 
     
 def parse_datagram(datagram):
-    return datagram.split("|")
+    splitted = datagram.split("|")
+    return Datagrama(splitted[0],splitted[1],int(splitted[2]),splitted[3],int(splitted[4]),splitted[5])
     
 def parse_address(address):
     """Parse an address of the form ip:puerto or ip:puerto:mtu."""
@@ -69,7 +70,14 @@ def main():
     data = sock.recv(1024).decode()
 
     datagrama = parse_datagram(data)
-    print(datagrama)
+
+    print(datagrama.p_dest == mi_puerto)
+    print(datagrama.p_dest)
+    print(mi_puerto)
+    if datagrama.ip_dest == mi_ip and datagrama.p_dest == mi_puerto:
+        print(datagrama.mensaje)
+    else:
+        print("No es para mi")
 
 
 if __name__ == "__main__":
