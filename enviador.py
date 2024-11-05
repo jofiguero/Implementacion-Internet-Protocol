@@ -18,21 +18,23 @@ def generar_mensaje_enorme(min_size):
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('127.0.0.1',8081))
+sock.bind(('127.0.0.1',8085))
 while True:
     
     desicion = input("¿Quieres enviar un mensaje propio (1) o un mensaje muy largo autogenerado (2)? ")
 
     if desicion == "1":
-        mensaje = str(Datagrama(input("Ingresa tu mensaje: "),'127.0.0.1',8081,'127.0.0.1',8082,1))
+        input = input("Ingresa tu mensaje: ")
+        mensaje = str(Datagrama(input,'127.0.0.1',8085,'127.0.0.1',8080,1,0,True,len(input)))
         break
 
     elif desicion == "2":
-        mensaje = str(Datagrama(generar_mensaje_enorme(int(input("Ingresa el largo que quieres que tenga el mensaje: "))),'127.0.0.1',8081,'127.0.0.1',8082,1))
+        input = generar_mensaje_enorme(int(input("Ingresa el largo que quieres que tenga el mensaje: ")))
+        mensaje = str(Datagrama(input,'127.0.0.1',8085,'127.0.0.1',8080,1,0,True,len(input)))
         break
 
     else: 
         print("Input no valido")
 
 
-sock.sendto(mensaje.encode(),('127.0.0.1',8080))
+sock.sendto(mensaje.encode(),('127.0.0.1',8084))
